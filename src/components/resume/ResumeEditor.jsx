@@ -238,7 +238,17 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
                   </Button>
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label className="text-xs">Institution</Label><Input value={edu.institution || ''} onChange={e => updateEducation(idx, 'institution', e.target.value)} /></div>
-                    <div><Label className="text-xs">Degree</Label><Input value={edu.degree || ''} onChange={e => updateEducation(idx, 'degree', e.target.value)} /></div>
+                    <div>
+                      <Label className="text-xs">Degree / Credential</Label>
+                      <Select value={edu.degree || ''} onValueChange={v => updateEducation(idx, 'degree', v)}>
+                        <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select degree..." /></SelectTrigger>
+                        <SelectContent>
+                          {["Some High School","High School Diploma / GED","Some College / CEGEP","College Diploma","College Certificate","Apprenticeship / Trades Certificate","Bachelor's Degree","Post-Graduate Diploma","Master's Degree","Doctoral Degree (PhD)","Professional Degree (MD, JD, etc.)","Other"].map(d => (
+                            <SelectItem key={d} value={d}>{d}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div><Label className="text-xs">Field of Study</Label><Input value={edu.field || ''} onChange={e => updateEducation(idx, 'field', e.target.value)} /></div>
                     <div className="grid grid-cols-2 gap-2">
                       <div><Label className="text-xs">Start</Label><YearSelect value={edu.start_year} onChange={v => updateEducation(idx, 'start_year', v)} placeholder="Start" /></div>
