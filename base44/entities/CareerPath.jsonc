@@ -1,0 +1,69 @@
+{
+  "name": "CareerPath",
+  "type": "object",
+  "properties": {
+    "participant_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Career path name"
+    },
+    "current_role": {
+      "type": "string"
+    },
+    "target_role": {
+      "type": "string"
+    },
+    "timeline_years": {
+      "type": "number"
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "target_date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed"
+            ]
+          },
+          "skills_needed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "required_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_education": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "participant_id",
+    "title"
+  ]
+}

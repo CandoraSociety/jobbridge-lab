@@ -1,0 +1,27 @@
+{
+  "name": "VisitLog",
+  "type": "object",
+  "properties": {
+    "participant_id": {
+      "type": "string"
+    },
+    "participant_name": {
+      "type": "string"
+    },
+    "participant_email": {
+      "type": "string"
+    },
+    "is_guest": {
+      "type": "boolean",
+      "default": false
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "participant_name",
+    "visit_date"
+  ]
+}
