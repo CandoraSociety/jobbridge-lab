@@ -41,9 +41,19 @@ export default function ResumeBuilder() {
     },
   });
 
+  const normalizeResume = (resumeData) => ({
+    ...resumeData,
+    experience: (resumeData.experience || []).map(exp => ({
+      ...exp,
+      bullets: exp.bullets?.length ? exp.bullets : exp.description ? [exp.description] : [''],
+    })),
+    education: resumeData.education || [],
+    skills: resumeData.skills || [],
+  });
+
   const handleCreateResume = () => {
     if (!newTitle.trim()) { toast.error('Please enter a resume name.'); return; }
-    createMutation.mutate({
+    createMutation.mutate(normalizeResume({
       participant_id: participant.id,
       title: newTitle,
       template: newTemplate,
@@ -55,7 +65,7 @@ export default function ResumeBuilder() {
       certifications: [],
       volunteer: [],
       references_available: true,
-    });
+    }));
   };
 
   const deleteMutation = useMutation({
@@ -133,7 +143,7 @@ export default function ResumeBuilder() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {resumes.map(resume => (
             <Card key={resume.id} className="hover:shadow-lg transition-all cursor-pointer group hover:border-primary/20"
-              onClick={() => setSelectedResume(resume)}>
+              onClick={() => setSelectedResume(normalizeResume(resume))}>
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
