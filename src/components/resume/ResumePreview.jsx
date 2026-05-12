@@ -1,118 +1,166 @@
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 
+// 8.5 x 11 inches at 96dpi = 816 x 1056px
 export default function ResumePreview({ data, participant }) {
   const name = participant?.name || 'Your Name';
   const email = participant?.email || '';
   const phone = participant?.phone || '';
 
   return (
-    <Card className="max-w-3xl mx-auto shadow-lg print:shadow-none print:border-none">
-      <CardContent className="p-8 sm:p-10" id="resume-preview-content">
-        {/* Header */}
-        <div className="text-center mb-6 pb-4 border-b-2 border-primary">
-          <h1 className="text-2xl font-heading font-bold text-foreground">{name}</h1>
-          <div className="flex items-center justify-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
-            {email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{email}</span>}
-            {phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{phone}</span>}
+    <>
+      {/* Print styles */}
+      <style>{`
+        @media print {
+          body * { visibility: hidden !important; }
+          #resume-page, #resume-page * { visibility: visible !important; }
+          #resume-page {
+            position: fixed !important;
+            top: 0; left: 0;
+            width: 8.5in !important;
+            min-height: 11in !important;
+            margin: 0 !important;
+            padding: 0.75in !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          @page { size: letter; margin: 0; }
+        }
+      `}</style>
+
+      {/* Page wrapper — centered on screen, fixed 8.5x11 aspect */}
+      <div className="flex justify-center py-6 bg-muted/30">
+        <div
+          id="resume-page"
+          className="bg-white shadow-xl border border-border"
+          style={{
+            width: '816px',       // 8.5in @ 96dpi
+            minHeight: '1056px',  // 11in @ 96dpi
+            padding: '72px',      // 0.75in margins
+            boxSizing: 'border-box',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '11pt',
+            color: '#111',
+            lineHeight: '1.4',
+          }}
+        >
+          <div id="resume-preview-content">
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '16px', paddingBottom: '12px', borderBottom: '2px solid #2563eb' }}>
+              <h1 style={{ fontSize: '22pt', fontWeight: 'bold', margin: '0 0 6px 0', color: '#111' }}>{name}</h1>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', fontSize: '10pt', color: '#555', flexWrap: 'wrap' }}>
+                {email && <span>✉ {email}</span>}
+                {phone && <span>✆ {phone}</span>}
+              </div>
+            </div>
+
+            {/* Summary */}
+            {data.summary && (
+              <Section title="Professional Summary">
+                <p style={{ margin: 0, fontSize: '10.5pt' }}>{data.summary}</p>
+              </Section>
+            )}
+
+            {/* Objective */}
+            {data.objective && (
+              <Section title="Objective">
+                <p style={{ margin: 0, fontSize: '10.5pt' }}>{data.objective}</p>
+              </Section>
+            )}
+
+            {/* Experience */}
+            {data.experience?.length > 0 && (
+              <Section title="Work Experience">
+                {data.experience.map((exp, idx) => (
+                  <div key={idx} style={{ marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <strong style={{ fontSize: '11pt' }}>{exp.title}</strong>
+                        {exp.company && <div style={{ fontSize: '10.5pt', color: '#444' }}>{exp.company}</div>}
+                      </div>
+                      {(exp.start_date || exp.end_date) && (
+                        <span style={{ fontSize: '10pt', color: '#555', whiteSpace: 'nowrap', marginLeft: '12px' }}>
+                          {exp.start_date}{exp.start_date && (exp.end_date || exp.current) ? ' — ' : ''}{exp.current ? 'Present' : exp.end_date}
+                        </span>
+                      )}
+                    </div>
+                    {exp.bullets?.filter(b => b).length > 0 && (
+                      <ul style={{ margin: '4px 0 0 16px', padding: 0, fontSize: '10.5pt' }}>
+                        {exp.bullets.filter(b => b).map((bullet, bIdx) => (
+                          <li key={bIdx} style={{ marginBottom: '2px' }}>{bullet}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </Section>
+            )}
+
+            {/* Education */}
+            {data.education?.length > 0 && (
+              <Section title="Education">
+                {data.education.map((edu, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div>
+                      <strong style={{ fontSize: '11pt' }}>{edu.degree}{edu.field ? ` — ${edu.field}` : ''}</strong>
+                      {edu.institution && <div style={{ fontSize: '10.5pt', color: '#444' }}>{edu.institution}</div>}
+                    </div>
+                    {(edu.start_year || edu.end_year) && (
+                      <span style={{ fontSize: '10pt', color: '#555', whiteSpace: 'nowrap', marginLeft: '12px' }}>
+                        {edu.start_year}{edu.start_year && edu.end_year ? ' — ' : ''}{edu.end_year}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </Section>
+            )}
+
+            {/* Skills */}
+            {data.skills?.length > 0 && (
+              <Section title="Skills">
+                <p style={{ margin: 0, fontSize: '10.5pt' }}>{data.skills.join(' · ')}</p>
+              </Section>
+            )}
+
+            {/* Certifications */}
+            {data.certifications?.length > 0 && (
+              <Section title="Certifications">
+                {data.certifications.map((cert, idx) => (
+                  <p key={idx} style={{ margin: '2px 0', fontSize: '10.5pt' }}>
+                    {cert.name}{cert.issuer ? ` — ${cert.issuer}` : ''}{cert.year ? ` (${cert.year})` : ''}
+                  </p>
+                ))}
+              </Section>
+            )}
+
+            {/* References */}
+            {data.references_available && (
+              <div style={{ marginTop: '20px', paddingTop: '10px', borderTop: '1px solid #ddd', textAlign: 'center' }}>
+                <em style={{ fontSize: '10pt', color: '#777' }}>References available upon request</em>
+              </div>
+            )}
           </div>
         </div>
+      </div>
+    </>
+  );
+}
 
-        {/* Summary */}
-        {data.summary && (
-          <div className="mb-5">
-            <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-primary mb-2">Professional Summary</h2>
-            <p className="text-sm leading-relaxed">{data.summary}</p>
-          </div>
-        )}
-
-        {/* Objective */}
-        {data.objective && (
-          <div className="mb-5">
-            <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-primary mb-2">Objective</h2>
-            <p className="text-sm leading-relaxed">{data.objective}</p>
-          </div>
-        )}
-
-        {/* Experience */}
-        {data.experience?.length > 0 && (
-          <div className="mb-5">
-            <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-primary mb-3">Work Experience</h2>
-            <div className="space-y-4">
-              {data.experience.map((exp, idx) => (
-                <div key={idx}>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-sm">{exp.title}</h3>
-                      <p className="text-sm text-muted-foreground">{exp.company}</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground whitespace-nowrap">
-                      {exp.start_date} — {exp.current ? 'Present' : exp.end_date}
-                    </p>
-                  </div>
-                  {exp.bullets?.filter(b => b).length > 0 && (
-                    <ul className="mt-1.5 space-y-1">
-                      {exp.bullets.filter(b => b).map((bullet, bIdx) => (
-                        <li key={bIdx} className="text-sm pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-primary">
-                          {bullet}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Education */}
-        {data.education?.length > 0 && (
-          <div className="mb-5">
-            <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-primary mb-3">Education</h2>
-            <div className="space-y-3">
-              {data.education.map((edu, idx) => (
-                <div key={idx} className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold text-sm">{edu.degree} {edu.field ? `in ${edu.field}` : ''}</h3>
-                    <p className="text-sm text-muted-foreground">{edu.institution}</p>
-                  </div>
-                  <p className="text-xs text-muted-foreground whitespace-nowrap">
-                    {edu.start_year} — {edu.end_year || 'Present'}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Skills */}
-        {data.skills?.length > 0 && (
-          <div className="mb-5">
-            <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-primary mb-2">Skills</h2>
-            <p className="text-sm">{data.skills.join(' · ')}</p>
-          </div>
-        )}
-
-        {/* Certifications */}
-        {data.certifications?.length > 0 && (
-          <div className="mb-5">
-            <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-primary mb-2">Certifications</h2>
-            <div className="space-y-1">
-              {data.certifications.map((cert, idx) => (
-                <p key={idx} className="text-sm">{cert.name}{cert.issuer ? ` — ${cert.issuer}` : ''}{cert.year ? ` (${cert.year})` : ''}</p>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* References */}
-        {data.references_available && (
-          <div className="mt-6 pt-4 border-t">
-            <p className="text-xs text-muted-foreground italic text-center">References available upon request</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+function Section({ title, children }) {
+  return (
+    <div style={{ marginBottom: '14px' }}>
+      <h2 style={{
+        fontSize: '10.5pt',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        color: '#2563eb',
+        borderBottom: '1px solid #d1d5db',
+        paddingBottom: '3px',
+        marginBottom: '8px',
+        marginTop: 0,
+      }}>{title}</h2>
+      {children}
+    </div>
   );
 }

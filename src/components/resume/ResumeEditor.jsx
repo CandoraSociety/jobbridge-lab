@@ -8,9 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Save, Sparkles, Plus, Trash2, Loader2, Printer, Mail } from 'lucide-react';
+import { ArrowLeft, Save, Sparkles, Plus, Trash2, Loader2, Printer, Mail, Download, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import ResumePreview from './ResumePreview';
+import YearSelect from '@/components/profile/YearSelect';
+import SkillInput from '@/components/profile/SkillInput';
 
 export default function ResumeEditor({ resume, participant, isGuest, onBack, onUpdate }) {
   const [data, setData] = useState(resume);
@@ -82,6 +84,36 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
 
   const handlePrint = () => { setTab('preview'); setTimeout(() => window.print(), 300); };
 
+  const handleDownloadPDF = () => {
+    setTab('preview');
+    setTimeout(() => window.print(), 300);
+  };
+
+  const handleDownloadWord = () => {
+    const el = document.getElementById('resume-preview-content');
+    if (!el) { toast.error('Switch to Preview tab first'); return; }
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; margin: 1in; font-size: 11pt; color: #000; }
+        h1 { font-size: 18pt; text-align: center; margin-bottom: 4pt; }
+        .contact { text-align: center; font-size: 10pt; color: #444; margin-bottom: 12pt; }
+        h2 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2pt; margin-top: 14pt; margin-bottom: 6pt; }
+        h3 { font-size: 11pt; margin: 0; }
+        p, li { font-size: 10.5pt; margin: 2pt 0; line-height: 1.4; }
+        .row { display: flex; justify-content: space-between; }
+        .date { font-size: 10pt; color: #555; }
+        ul { margin: 4pt 0 0 14pt; padding: 0; }
+        .skills { font-size: 10.5pt; }
+      </style></head><body>${el.innerHTML}</body></html>`;
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${data.title || 'Resume'}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleEmail = async () => {
     if (!participant?.email) { toast.error('No email on file.'); return; }
     toast.info('Sending resume to your email...');
@@ -112,9 +144,10 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
             <Badge variant="outline" className="text-xs capitalize">{data.template}</Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-1" /> Print</Button>
+        <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={handleEmail}><Mail className="w-4 h-4 mr-1" /> Email</Button>
+          <Button variant="outline" size="sm" onClick={handleDownloadWord}><FileText className="w-4 h-4 mr-1" /> Word</Button>
+          <Button variant="outline" size="sm" onClick={handleDownloadPDF}><Download className="w-4 h-4 mr-1" /> PDF</Button>
           <Button size="sm" onClick={save} disabled={saving}>
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save className="w-4 h-4 mr-1" />} Save
           </Button>
@@ -170,8 +203,8 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label className="text-xs">Job Title</Label><Input value={exp.title || ''} onChange={e => updateExperience(idx, 'title', e.target.value)} /></div>
                     <div><Label className="text-xs">Company</Label><Input value={exp.company || ''} onChange={e => updateExperience(idx, 'company', e.target.value)} /></div>
-                    <div><Label className="text-xs">Start Date</Label><Input value={exp.start_date || ''} onChange={e => updateExperience(idx, 'start_date', e.target.value)} placeholder="e.g. Jan 2022" /></div>
-                    <div><Label className="text-xs">End Date</Label><Input value={exp.end_date || ''} onChange={e => updateExperience(idx, 'end_date', e.target.value)} placeholder="Present" /></div>
+                    <div><Label className="text-xs">Start Year</Label><YearSelect value={exp.start_date} onChange={v => updateExperience(idx, 'start_date', v)} placeholder="Start year" /></div>
+                    <div><Label className="text-xs">End Year</Label><YearSelect value={exp.end_date} onChange={v => updateExperience(idx, 'end_date', v)} placeholder="End / Present" /></div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
@@ -208,8 +241,8 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
                     <div><Label className="text-xs">Degree</Label><Input value={edu.degree || ''} onChange={e => updateEducation(idx, 'degree', e.target.value)} /></div>
                     <div><Label className="text-xs">Field of Study</Label><Input value={edu.field || ''} onChange={e => updateEducation(idx, 'field', e.target.value)} /></div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div><Label className="text-xs">Start</Label><Input value={edu.start_year || ''} onChange={e => updateEducation(idx, 'start_year', e.target.value)} placeholder="2020" /></div>
-                      <div><Label className="text-xs">End</Label><Input value={edu.end_year || ''} onChange={e => updateEducation(idx, 'end_year', e.target.value)} placeholder="2024" /></div>
+                      <div><Label className="text-xs">Start</Label><YearSelect value={edu.start_year} onChange={v => updateEducation(idx, 'start_year', v)} placeholder="Start" /></div>
+                      <div><Label className="text-xs">End</Label><YearSelect value={edu.end_year} onChange={v => updateEducation(idx, 'end_year', v)} placeholder="End" /></div>
                     </div>
                   </div>
                 </div>
@@ -229,8 +262,7 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
                   </Badge>
                 ))}
               </div>
-              <Input placeholder="Type a skill and press Enter"
-                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(e.target.value.trim()); e.target.value = ''; } }} />
+              <SkillInput skills={data.skills || []} onAdd={addSkill} />
             </CardContent>
           </Card>
 
