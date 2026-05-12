@@ -40,6 +40,7 @@ export default function JobTracker() {
   const [form, setForm] = useState(emptyForm);
   const [filterStatus, setFilterStatus] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
+  const [activeTab, setActiveTab] = useState('listings');
 
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ['jobApplications', participant?.id],
@@ -150,9 +151,11 @@ export default function JobTracker() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-semibold">{app.position}</h3>
-                  <Badge className={`text-xs border-0 ${STATUS_CONFIG[app.status]?.class || ''}`}>
-                    {STATUS_CONFIG[app.status]?.label || app.status}
-                  </Badge>
+                  {app.status !== 'saved' && (
+                    <Badge className={`text-xs border-0 ${STATUS_CONFIG[app.status]?.class || ''}`}>
+                      {STATUS_CONFIG[app.status]?.label || app.status}
+                    </Badge>
+                  )}
                   {app.deadline && (
                     <Badge variant="outline" className={`text-xs flex items-center gap-1 ${deadlinePast ? 'border-destructive text-destructive' : 'border-accent text-accent'}`}>
                       {deadlinePast && <AlertCircle className="w-3 h-3" />}
@@ -223,7 +226,9 @@ export default function JobTracker() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) { setEditingId(null); setForm(emptyForm); } }}>
           <DialogTrigger asChild>
-            <Button><Plus className="w-4 h-4 mr-2" /> Add Job</Button>
+            <Button onClick={() => setForm({ ...emptyForm, status: activeTab === 'applications' ? 'applied' : 'saved' })}>
+              <Plus className="w-4 h-4 mr-2" /> Add Job
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editingId ? 'Edit Job' : 'Add Job'}</DialogTitle></DialogHeader>
@@ -232,7 +237,7 @@ export default function JobTracker() {
         </Dialog>
       </div>
 
-      <Tabs defaultValue="listings">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="listings" className="flex items-center gap-1.5">
             <BookmarkCheck className="w-4 h-4" /> Saved Listings
