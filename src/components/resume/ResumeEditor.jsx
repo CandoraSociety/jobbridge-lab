@@ -20,13 +20,14 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
   const [aiLoading, setAiLoading] = useState(false);
   const [tab, setTab] = useState('edit');
 
-  const save = async () => {
+  const save = async (andPreview = false) => {
     setSaving(true);
     const { id, created_date, updated_date, created_by, ...rest } = data;
     const updated = await base44.entities.Resume.update(resume.id, rest);
     onUpdate({ ...data, ...updated });
     toast.success('Saved!');
     setSaving(false);
+    if (andPreview) setTab('preview');
   };
 
   const enhanceWithAI = async (field) => {
@@ -292,10 +293,13 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
             </CardContent>
           </Card>
 
-          {/* Bottom Save Button */}
-          <div className="flex justify-end pt-2 pb-6">
-            <Button size="lg" onClick={save} disabled={saving}>
-              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />} Save Resume
+          {/* Bottom Save Buttons */}
+          <div className="flex justify-end gap-3 pt-2 pb-6">
+            <Button variant="outline" size="lg" onClick={() => save(false)} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />} Save
+            </Button>
+            <Button size="lg" onClick={() => save(true)} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} Save & Preview Resume
             </Button>
           </div>
         </TabsContent>
