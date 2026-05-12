@@ -7,8 +7,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Save, Loader2, User, Briefcase, GraduationCap, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import YearSelect from '@/components/profile/YearSelect';
+import SkillInput from '@/components/profile/SkillInput';
+
+const DEGREE_PRESETS = [
+  "Some High School",
+  "High School Diploma / GED",
+  "Some College / CEGEP",
+  "College Diploma",
+  "College Certificate",
+  "Apprenticeship / Trades Certificate",
+  "Bachelor's Degree",
+  "Post-Graduate Diploma",
+  "Master's Degree",
+  "Doctoral Degree (PhD)",
+  "Professional Degree (MD, JD, etc.)",
+  "Other",
+];
 
 export default function Profile() {
   const { participant, setParticipant, isGuest } = useParticipant();
@@ -99,8 +117,8 @@ export default function Profile() {
               <div className="grid grid-cols-2 gap-3">
                 <div><Label className="text-xs">Job Title</Label><Input value={exp.title || ''} onChange={e => updateExp(i, 'title', e.target.value)} /></div>
                 <div><Label className="text-xs">Company</Label><Input value={exp.company || ''} onChange={e => updateExp(i, 'company', e.target.value)} /></div>
-                <div><Label className="text-xs">Start Date</Label><Input value={exp.start_date || ''} onChange={e => updateExp(i, 'start_date', e.target.value)} placeholder="Jan 2022" /></div>
-                <div><Label className="text-xs">End Date</Label><Input value={exp.end_date || ''} onChange={e => updateExp(i, 'end_date', e.target.value)} placeholder="Present" /></div>
+                <div><Label className="text-xs">Start Year</Label><YearSelect value={exp.start_date} onChange={v => updateExp(i, 'start_date', v)} placeholder="Start year" /></div>
+                <div><Label className="text-xs">End Year</Label><YearSelect value={exp.end_date} onChange={v => updateExp(i, 'end_date', v)} placeholder="End year / Present" /></div>
               </div>
               <div><Label className="text-xs">Description</Label><Textarea value={exp.description || ''} onChange={e => updateExp(i, 'description', e.target.value)} rows={2} /></div>
             </div>
@@ -123,11 +141,19 @@ export default function Profile() {
               </Button>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label className="text-xs">Institution</Label><Input value={edu.institution || ''} onChange={e => updateEdu(i, 'institution', e.target.value)} /></div>
-                <div><Label className="text-xs">Degree</Label><Input value={edu.degree || ''} onChange={e => updateEdu(i, 'degree', e.target.value)} /></div>
+                <div>
+                  <Label className="text-xs">Degree / Credential</Label>
+                  <Select value={edu.degree || ''} onValueChange={v => updateEdu(i, 'degree', v)}>
+                    <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select degree..." /></SelectTrigger>
+                    <SelectContent>
+                      {DEGREE_PRESETS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div><Label className="text-xs">Field of Study</Label><Input value={edu.field || ''} onChange={e => updateEdu(i, 'field', e.target.value)} /></div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div><Label className="text-xs">Start</Label><Input value={edu.start_year || ''} onChange={e => updateEdu(i, 'start_year', e.target.value)} /></div>
-                  <div><Label className="text-xs">End</Label><Input value={edu.end_year || ''} onChange={e => updateEdu(i, 'end_year', e.target.value)} /></div>
+                  <div><Label className="text-xs">Start</Label><YearSelect value={edu.start_year} onChange={v => updateEdu(i, 'start_year', v)} placeholder="Start" /></div>
+                  <div><Label className="text-xs">End</Label><YearSelect value={edu.end_year} onChange={v => updateEdu(i, 'end_year', v)} placeholder="End" /></div>
                 </div>
               </div>
             </div>
@@ -147,8 +173,7 @@ export default function Profile() {
               </Badge>
             ))}
           </div>
-          <Input placeholder="Type a skill and press Enter"
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(e.target.value.trim()); e.target.value = ''; } }} />
+          <SkillInput skills={data.skills} onAdd={addSkill} />
         </CardContent>
       </Card>
 
