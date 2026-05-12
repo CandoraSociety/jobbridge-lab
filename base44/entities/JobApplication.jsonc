@@ -38,8 +38,25 @@
       "type": "string",
       "format": "date"
     },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Application deadline"
+    },
     "salary_range": {
       "type": "string"
+    },
+    "how_to_apply": {
+      "type": "string",
+      "description": "How to apply (online, email, in-person, etc.)"
+    },
+    "application_instructions": {
+      "type": "string",
+      "description": "Specific instructions for applying (cover letter required, documents needed, etc.)"
+    },
+    "job_description": {
+      "type": "string",
+      "description": "Full job description"
     },
     "notes": {
       "type": "string"

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ExternalLink, MapPin, Building2, Briefcase, Loader2, Globe, Star } from 'lucide-react';
+import { Search, ExternalLink, MapPin, Building2, Briefcase, Loader2, Globe, Star, BookmarkPlus, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -26,6 +26,21 @@ export default function JobSearch() {
   const [jobResults, setJobResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [savedJobs, setSavedJobs] = useState(new Set());
+
+  const saveToTracker = async (job) => {
+    await base44.entities.JobApplication.create({
+      participant_id: participant.id,
+      company: job.company,
+      position: job.title,
+      location: job.location,
+      salary_range: job.salary,
+      job_description: job.description,
+      status: 'saved',
+    });
+    setSavedJobs(prev => new Set([...prev, job.title + job.company]));
+    toast.success(`"${job.title}" saved to your Job Tracker!`);
+  };
 
   // Suggest search based on participant skills
   useEffect(() => {
@@ -158,6 +173,17 @@ export default function JobSearch() {
                               {job.posted && <Badge variant="outline" className="text-xs">{job.posted}</Badge>}
                               {job.match_score >= 80 && <Badge className="text-xs bg-chart-2/10 text-chart-2 border-0"><Star className="w-3 h-3 mr-1" />Great match</Badge>}
                             </div>
+                          </div>
+                          <div className="shrink-0">
+                            {savedJobs.has(job.title + job.company) ? (
+                              <Button variant="outline" size="sm" disabled className="text-chart-2">
+                                <Check className="w-3 h-3 mr-1" /> Saved
+                              </Button>
+                            ) : (
+                              <Button variant="outline" size="sm" onClick={() => saveToTracker(job)}>
+                                <BookmarkPlus className="w-3 h-3 mr-1" /> Save to Tracker
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </CardContent>
