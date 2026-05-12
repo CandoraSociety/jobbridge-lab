@@ -291,6 +291,13 @@ export default function ResumeEditor({ resume, participant, isGuest, onBack, onU
               </Select>
             </CardContent>
           </Card>
+
+          {/* Bottom Save Button */}
+          <div className="flex justify-end pt-2 pb-6">
+            <Button size="lg" onClick={save} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />} Save Resume
+            </Button>
+          </div>
         </TabsContent>
 
         <TabsContent value="preview" className="mt-4">
