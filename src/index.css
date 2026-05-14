@@ -9,15 +9,18 @@
     --font-heading: 'DM Sans', sans-serif;
     --font-body: 'Inter', sans-serif;
 
+    --brand-primary-hex: #4F88F9;
+    --brand-secondary-hex: #F5F5F5;
+
     --background: 220 20% 97%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 217 91% 50%;
+    --primary: var(--brand-primary-hex);
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
+    --secondary: var(--brand-secondary-hex);
     --secondary-foreground: 222 47% 11%;
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
@@ -51,9 +54,9 @@
     --card-foreground: 220 14% 96%;
     --popover: 222 47% 9%;
     --popover-foreground: 220 14% 96%;
-    --primary: 217 91% 60%;
+    --primary: var(--brand-primary-hex);
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 40% 14%;
+    --secondary: var(--brand-secondary-hex);
     --secondary-foreground: 220 14% 96%;
     --muted: 222 40% 14%;
     --muted-foreground: 220 9% 55%;
