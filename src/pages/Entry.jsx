@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,16 +7,21 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from '@/api/base44Client';
 import { useParticipant } from '@/lib/ParticipantContext';
-import { Briefcase, UserPlus, LogIn, UserX, Eye, EyeOff } from 'lucide-react';
+import { Briefcase, LogIn, UserPlus, UserX, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 export default function Entry() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useParticipant();
   const [tab, setTab] = useState('signin');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Determine location type from route
+  const isOnsite = location.pathname === '/onsite';
+  const locationType = isOnsite ? 'onsite' : 'offsite';
 
   const [signinForm, setSigninForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
@@ -46,7 +51,8 @@ export default function Entry() {
       participant_name: p.name,
       participant_email: p.email,
       is_guest: false,
-      visit_date: new Date().toISOString()
+      visit_date: new Date().toISOString(),
+      location_type: locationType
     });
     login({ ...p, ...updated, total_visits: (p.total_visits || 1) + 1 });
     toast.success(`Welcome back, ${p.name}!`);
@@ -85,7 +91,8 @@ export default function Entry() {
       participant_name: registerForm.name,
       participant_email: registerForm.email,
       is_guest: false,
-      visit_date: new Date().toISOString()
+      visit_date: new Date().toISOString(),
+      location_type: locationType
     });
     login(p);
     toast.success(`Welcome, ${registerForm.name}! Your account has been created.`);
@@ -109,7 +116,8 @@ export default function Entry() {
       participant_name: guestForm.name,
       participant_email: guestForm.email,
       is_guest: true,
-      visit_date: new Date().toISOString()
+      visit_date: new Date().toISOString(),
+      location_type: locationType
     });
     login({ ...p, is_guest: true });
     toast.success(`Welcome, ${guestForm.name}! You're signed in as a guest.`);
@@ -130,7 +138,12 @@ export default function Entry() {
             <Briefcase className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-3xl font-heading font-bold text-foreground">Job Lab</h1>
-          <p className="text-muted-foreground mt-2">Your career starts here. Sign in to access tools, resources, and more.</p>
+          <p className="text-muted-foreground mt-2">
+            {isOnsite ? 'Riverview Crossing Jobs Lab' : 'Your career starts here'}
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isOnsite ? 'Onsite Portal' : 'Public Portal'}
+          </p>
         </div>
 
         <Card className="shadow-xl border-0 bg-card/80 backdrop-blur-sm">

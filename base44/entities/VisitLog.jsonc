@@ -18,6 +18,14 @@
     "visit_date": {
       "type": "string",
       "format": "date-time"
+    },
+    "location_type": {
+      "type": "string",
+      "enum": [
+        "onsite",
+        "offsite"
+      ],
+      "description": "Whether the visit was from onsite (Jobs Lab) or offsite (remote)"
     }
   },
   "required": [
