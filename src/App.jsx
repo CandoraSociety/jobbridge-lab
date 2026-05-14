@@ -8,7 +8,6 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { ParticipantProvider, useParticipant } from '@/lib/ParticipantContext';
 import { BrandingProvider } from '@/lib/BrandingContext';
 
-import Home from './pages/Home';
 import Entry from './pages/Entry';
 import Dashboard from './pages/Dashboard';
 import JobSearch from './pages/JobSearch';
@@ -53,9 +52,7 @@ const AuthenticatedApp = () => {
   return (
     <ParticipantProvider>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/onsite" element={<Entry />} />
-        <Route path="/public" element={<Entry />} />
+        <Route path="/" element={<Entry />} />
         <Route element={<RequireParticipant><AppLayout /></RequireParticipant>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/job-search" element={<JobSearch />} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,15 +13,15 @@ import { toast } from 'sonner';
 
 export default function Entry() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useParticipant();
   const [tab, setTab] = useState('signin');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Determine location type from route
-  const isOnsite = location.pathname === '/onsite';
-  const locationType = isOnsite ? 'onsite' : 'offsite';
+  // Determine location type from URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const locationType = urlParams.get('location') || 'offsite';
+  const isOnsite = locationType === 'onsite';
 
   const [signinForm, setSigninForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
