@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { ParticipantProvider, useParticipant } from '@/lib/ParticipantContext';
 import { BrandingProvider } from '@/lib/BrandingContext';
+import { useBranding } from '@/hooks/useBranding';
 
 import Entry from './pages/Entry';
 import Dashboard from './pages/Dashboard';
@@ -30,6 +31,7 @@ const RequireParticipant = ({ children }) => {
 };
 
 const AuthenticatedApp = () => {
+  useBranding();
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
